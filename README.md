@@ -14,7 +14,7 @@ with opinions.
 From a Claude Code session, anywhere the repo is reachable:
 
 ```
-/plugin marketplace add <owner>/pstack-claude
+/plugin marketplace add elijahbowie/pstack-claude
 /plugin install pstack@pstack-claude
 ```
 
