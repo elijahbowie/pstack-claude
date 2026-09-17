@@ -41,6 +41,10 @@ prose and judgment.
 
 `poteto-agent` is available as a subagent type, so `/poteto-mode` and spawned delegates share one style.
 
+46 of the 47 skills carry `disable-model-invocation: true`, which is upstream's setting. Claude Code
+honours it the same way Cursor did, so those skills only run when you type `/name`. They will not
+auto-trigger, and they will not appear in the model's own skill list. `setup-pstack` is the exception.
+
 ## What's inside
 
 47 skills, 2 agents, 23 playbooks. The entry points are `/poteto-mode` and `/setup-pstack`. The rest
