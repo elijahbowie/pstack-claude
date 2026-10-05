@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Claude Code port of pstack, poteto's rigorous agent-workflow plugin for Cursor",
-    "version": "0.15.2"
+    "version": "0.15.10"
   },
   "plugins": [
     {
       "name": "pstack",
       "source": "./plugins/pstack",
       "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence.",
-      "version": "0.15.2",
+      "version": "0.15.10",
       "category": "developer-tools",
       "keywords": [
         "pstack",
