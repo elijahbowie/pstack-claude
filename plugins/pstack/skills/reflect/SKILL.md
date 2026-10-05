@@ -10,7 +10,7 @@ Mine the current conversation for durable learnings, then route them into skill 
 
 ## When to invoke
 
-Invoke when the user says "reflect" or "/reflect". Skip when the conversation is trivial, off-topic, or already covered by an existing skill the parent followed correctly. One-offs are not learnings.
+Invoke when the user says "reflect" or "/pstack:reflect". Skip when the conversation is trivial, off-topic, or already covered by an existing skill the parent followed correctly. One-offs are not learnings.
 
 ## Process
 
@@ -28,19 +28,21 @@ For each candidate, read the first JSONL line and check that `message.content[0]
 
 ### 2. Spawn three reviewers in parallel
 
-One message, three `Agent` calls, `subagent_type: general-purpose`, explicit `model:` on each, a full-tool agent, not the read-only `Explore` agent. Reviewers need MCP access for context lookups (tickets, chat threads, observability traces referenced in the transcript). The read-only `Explore` agent strips MCPs.
+One message, three `Agent` calls, `subagent_type: general-purpose`, with `model` set as below, a full-tool agent, not the read-only `Explore` agent. Reviewers need MCP access for context lookups (tickets, chat threads, observability traces referenced in the transcript). The read-only `Explore` agent strips MCPs.
 
-| Lens | `model` | Prompt template |
-|---|---|---|
-| Judgment | your configured reflect-judgment model (default `fable`) | `references/judgment-reviewer.md` |
-| Tooling | your configured reflect-tooling model (default `opus`) | `references/tooling-reviewer.md` |
-| Divergent | your configured reflect-judgment model (default `fable`) | `references/divergent-reviewer.md` |
+Each reviewer and the synthesizer name a role line in the `pstack-models.md` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Agent tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message.
+
+| Lens | Role line | Default `model` | Prompt template |
+|---|---|---|---|
+| Judgment | `reflect judgment, divergent, synthesizer` | `opus` | `references/judgment-reviewer.md` |
+| Tooling | `reflect tooling` | `opus` | `references/tooling-reviewer.md` |
+| Divergent | `reflect judgment, divergent, synthesizer` | `opus` | `references/divergent-reviewer.md` |
 
 Pass each template verbatim, substituting the transcript path or digest where marked. Reviewers return findings in the `Agent` response body.
 
 ### 3. Synthesize
 
-One `Agent` call, `subagent_type: general-purpose`, using your configured reflect-judgment model (default `fable`), a full-tool agent, not the read-only `Explore` agent. The synthesizer's quality check includes spot-verifying citations, which can require MCP access. The read-only `Explore` agent strips MCPs. Use `references/synthesizer.md` verbatim, with each reviewer's full output inlined where marked. The synthesizer returns a structured Accepted / Rejected / Backlog list.
+One `Agent` call, `subagent_type: general-purpose`, with `model` from the `reflect judgment, divergent, synthesizer` line (default `opus`), a full-tool agent, not the read-only `Explore` agent. The synthesizer's quality check includes spot-verifying citations, which can require MCP access. The read-only `Explore` agent strips MCPs. Use `references/synthesizer.md` verbatim, with each reviewer's full output inlined where marked. The synthesizer returns a structured Accepted / Rejected / Backlog list.
 
 ### 4. Structural enforcement check
 
